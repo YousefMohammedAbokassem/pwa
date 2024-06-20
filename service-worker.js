@@ -1,10 +1,11 @@
-const CACHE_NAME = "my-pwa-cache-v1";
+const CACHE_NAME = "my-pwa-cache-v2"; // تغيير اسم الكاش يجبر المتصفح على تحميل نسخة جديدة
+
 const urlsToCache = [
   "/",
   "/index.html",
   "/styles.css",
   "/images/1.jpeg",
-  "/images/2.jpeg",
+  "/manifest.json",
 ];
 
 self.addEventListener("install", (event) => {
@@ -22,6 +23,21 @@ self.addEventListener("fetch", (event) => {
         return response;
       }
       return fetch(event.request);
+    })
+  );
+});
+
+self.addEventListener("activate", (event) => {
+  const cacheWhitelist = [CACHE_NAME];
+  event.waitUntil(
+    caches.keys().then((cacheNames) => {
+      return Promise.all(
+        cacheNames.map((cacheName) => {
+          if (cacheWhitelist.indexOf(cacheName) === -1) {
+            return caches.delete(cacheName);
+          }
+        })
+      );
     })
   );
 });
