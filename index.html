@@ -4,11 +4,37 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>My Progressive Web App</title>
-    <link rel="manifest" href="manifest.json" />
+    <link id="manifest" rel="manifest" href="manifest.json" />
     <link rel="stylesheet" href="styles.css" />
     <script>
-      if ("serviceWorker" in navigator) {
-        window.addEventListener("load", () => {
+      function getMobileOperatingSystem() {
+        const userAgent =
+          navigator.userAgent || navigator.vendor || window.opera;
+
+        // iOS detection
+        if (/iPad|iPhone|iPod/.test(userAgent) && !window.MSStream) {
+          return "iOS";
+        }
+
+        // Android detection
+        if (/android/i.test(userAgent)) {
+          return "Android";
+        }
+
+        return "unknown";
+      }
+
+      window.addEventListener("load", () => {
+        const os = getMobileOperatingSystem();
+        const manifestLink = document.getElementById("manifest");
+
+        if (os === "iOS") {
+          manifestLink.href = "manifest-ios.json";
+        } else {
+          manifestLink.href = "manifest.json";
+        }
+
+        if ("serviceWorker" in navigator) {
           navigator.serviceWorker
             .register("/service-worker.js")
             .then((registration) => {
@@ -20,13 +46,13 @@
             .catch((error) => {
               console.log("ServiceWorker registration failed: ", error);
             });
-        });
-      }
+        }
+      });
     </script>
   </head>
   <body>
     <h1>Welcome to My Progressive Web App!</h1>
-    <img src="./images/2.jpeg" alt="" />
+    <img src="./images/1.jpeg" alt="" />
     <p>This is a simple PWA example.</p>
   </body>
 </html>
